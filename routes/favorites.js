@@ -9,14 +9,12 @@ const { camelizeKeys, decamelizeKeys } = require('humps')
 // eslint-disable-next-line new-cap
 const router = express.Router()
 
-const authorize = function(req, res, next) {
-  jwt.verify(req.cookies.token, process.env.JWT_KEY, (err, playload) => {
+const authorize = (req, res, next) => {
+  jwt.verify(req.cookies.token, process.env.JWT_KEY, (err, payload) => {
     if (err) {
       return next(boom.create(401, 'Unauthorized'))
     }
-
-    req.claim = playload
-
+    req.claim = payload
     next()
   })
 }
@@ -25,7 +23,6 @@ router.get('/favorites', authorize, (req, res, next) => {
   knex('favorites')
     .innerJoin('books', 'books.id', 'favorites.book_id')
     .where('favorites.user_id', req.claim.userId)
-    .orderBy('books.title', 'ASC')
     .then((rows) => {
       const favs = camelizeKeys(rows)
 
@@ -57,9 +54,7 @@ router.get('/favorites/check', authorize, (req, res, next) => {
 
       res.send(false)
     })
-    .catch((err) => {
-      next(err)
-    })
+    .catch((err) => next(err))
 })
 
 router.post('/favorites', authorize, (req, res, next) => {
@@ -84,12 +79,10 @@ router.post('/favorites', authorize, (req, res, next) => {
     })
     .then((rows) => {
       const favorite = camelizeKeys(rows[0])
-
+      res.setHeader('Content-Type','application/json')
       res.send(favorite)
     })
-    .catch((err) => {
-      next(err)
-    })
+.catch((err) => next(err))
 })
 
 router.delete('/favorites', authorize, (req, res, next) => {
@@ -122,9 +115,7 @@ router.delete('/favorites', authorize, (req, res, next) => {
 
       res.send(favorite)
     })
-    .catch((err) => {
-      next(err)
-    })
+    .catch((err) => next(err))
 })
 
 module.exports = router

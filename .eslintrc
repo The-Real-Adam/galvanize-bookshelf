@@ -1,8 +1,5 @@
-module.exports = {
+{
   extends: [
-    'ryansobol/es6',
-    'ryansobol/mocha',
-    'ryansobol/node',
     "airbnb"
   ],
   rules: {
@@ -26,5 +23,8 @@ module.exports = {
 
     // arrow return
     "arrow-body-style": "off"
+
+    //Radix
+    "radix": "as-needed"
   }
-};
+}
